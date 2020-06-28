@@ -18,6 +18,7 @@ class _ChatPageState extends State<ChatPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   FirebaseUser _currentUser;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -70,7 +71,8 @@ class _ChatPageState extends State<ChatPage> {
     Map<String, dynamic> data = {
       'uid': user.uid,
       'senderName': user.displayName,
-      'senderPhotoUrl': user.photoUrl
+      'senderPhotoUrl': user.photoUrl,
+      'time': Timestamp.now()
     };
 
     if (imgFile != null) {
@@ -79,10 +81,18 @@ class _ChatPageState extends State<ChatPage> {
           .child(DateTime.now().millisecondsSinceEpoch.toString())
           .putFile(imgFile);
 
+      setState(() {
+        _isLoading = true;
+      });
+
       StorageTaskSnapshot taskSnapshot = await task.onComplete;
       String url = await taskSnapshot.ref.getDownloadURL();
       data['imgUrl'] = url;
     }
+
+    setState(() {
+      _isLoading = false;
+    });
 
     if (text != null) data['text'] = text;
 
@@ -119,7 +129,10 @@ class _ChatPageState extends State<ChatPage> {
         children: <Widget>[
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
-              stream: Firestore.instance.collection('messages').snapshots(),
+              stream: Firestore.instance
+                  .collection('messages')
+                  .orderBy('time')
+                  .snapshots(),
               builder: (context, snapshot) {
                 switch (snapshot.connectionState) {
                   case ConnectionState.none:
@@ -143,6 +156,7 @@ class _ChatPageState extends State<ChatPage> {
               },
             ),
           ),
+          _isLoading ? LinearProgressIndicator() : Container(),
           TextComposerComponent(sendMessage: _sendMessage),
         ],
       ),
