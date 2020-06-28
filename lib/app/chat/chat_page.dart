@@ -78,7 +78,7 @@ class _ChatPageState extends State<ChatPage> {
     if (imgFile != null) {
       StorageUploadTask task = FirebaseStorage.instance
           .ref()
-          .child(DateTime.now().millisecondsSinceEpoch.toString())
+          .child(user.uid + DateTime.now().millisecondsSinceEpoch.toString())
           .putFile(imgFile);
 
       setState(() {
