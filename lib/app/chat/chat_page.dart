@@ -149,7 +149,9 @@ class _ChatPageState extends State<ChatPage> {
                       reverse: true,
                       itemBuilder: (context, index) {
                         return ChatMessageComponent(
-                            data: documents[index].data, mine: true);
+                            data: documents[index].data,
+                            mine: documents[index].data['uid'] ==
+                                _currentUser?.uid);
                       },
                     );
                 }
