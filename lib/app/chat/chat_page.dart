@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:chat_flutter/app/chat/components/chat_message_component.dart';
 import 'package:chat_flutter/app/chat/components/text_composer_component.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -111,9 +112,8 @@ class _ChatPageState extends State<ChatPage> {
                       itemCount: documents.length,
                       reverse: true,
                       itemBuilder: (context, index) {
-                        return ListTile(
-                          title: Text(documents[index].data['text']),
-                        );
+                        return ChatMessageComponent(
+                            data: documents[index].data, mine: true);
                       },
                     );
                 }
